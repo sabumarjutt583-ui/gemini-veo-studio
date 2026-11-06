@@ -1,0 +1,49 @@
+name: release-windows
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+# One release at a time; tags + manual dispatch.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  # Static checks + tests. Node 20 so the host ABI matches Electron 33's ABI:
+  # `npm ci` (postinstall: electron-builder install-app-deps) rebuilds
+  # better-sqlite3 for Electron, and the native-module test files can then be
+  # loaded by the host runner's Node 20.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+  # Build the NSIS installer and publish it as a GitHub Release.
+  release:
+    runs-on: windows-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Builds backend bundle + frontend bundle, then the NSIS installer.
+      - run: npm run build:win
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.exe
+          generate_release_notes: true
+        # Unsigned installer: users see a SmartScreen "unknown publisher"
+        # prompt on first run — expected, no code-signing certificate yet.

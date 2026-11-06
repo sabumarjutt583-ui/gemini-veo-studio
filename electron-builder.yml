@@ -1,0 +1,40 @@
+# electron-builder configuration — Windows installer (Gemini-Veo-Studio-Setup.exe).
+#
+# Data (SQLite db, browser profiles, video library) lives OUTSIDE the install
+# folder under %APPDATA%/gemini-veo-studio, so updates/uninstalls never touch
+# the user's data (requirement 19). The native better-sqlite3 binary ships as an
+# app dependency and is re-resolved by the postinstall `electron-builder
+# install-app-deps` hook so it links against Electron's ABI.
+
+appId: com.geminiveostudio.app
+productName: Gemini Veo Studio
+copyright: Copyright © 2026 Gemini Veo Studio
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  # PNG (256x256) — electron-builder converts it to .ico for the NSIS installer.
+  # Regenerate with `npm run icon` if it is missing.
+  icon: assets/icon.png
+  artifactName: Gemini-Veo-Studio-Setup-${version}.${ext}
+  # Persist user data across updates: keep the appData directory untouched.
+  asarUnpack:
+    - "node_modules/better-sqlite3/**"
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Gemini Veo Studio
+  deleteAppDataOnUninstall: false
+  # Customized + silent-install friendly.
+  perMachine: false
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - node_modules/**/*
+  - "!node_modules/**/*.map"
+  # better-sqlite3 prebuilds (native) must be copied into the package.
+  - "package.json"
+extraResources: []
+asar: true

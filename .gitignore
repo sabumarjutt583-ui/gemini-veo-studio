@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-electron/
+release/
+*.log
+.DS_Store
+coverage/
+.env.local
+# Local runtime data (db, profiles, videos) lives in %APPDATA%, not here.
+
+# Generated at test time (source: scripts/probe.ts)
+dist-electron/probe.js
+# Regeneratable asset (npm run icon)
+assets/icon.png
