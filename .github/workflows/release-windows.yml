@@ -38,6 +38,9 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # The app icon is a regeneratable asset (gitignored); electron-builder
+      # needs it on disk to build the NSIS installer.
+      - run: npm run icon
       # Builds backend bundle + frontend bundle, then the NSIS installer.
       - run: npm run build:win
       - name: Publish release
