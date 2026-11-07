@@ -5,6 +5,9 @@ on:
     tags: ["v*"]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 concurrency:
   group: release
   cancel-in-progress: false
@@ -19,7 +22,6 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci --ignore-scripts
-      # Host Node 20 ke liye better-sqlite3 ka binary (prebuild).
       - run: npm rebuild better-sqlite3
       - run: npm run typecheck
       - run: npm test
@@ -34,11 +36,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      # Icon gitignored hai — CI mein regenerate hokar electron-builder ko deta hai.
       - run: npm run icon
       - run: npm run build:win
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           files: release/*.exe
           generate_release_notes: true
