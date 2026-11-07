@@ -37,10 +37,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run icon
-      - run: npm run build:win
+      # electron-builder by default dist/ mein banata hai, aur khud publish
+      # na kare (yeh kaam neeche wala softprops step karega).
+      - run: npm run build:win -- --publish never
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: release/*.exe
+          files: dist/*.exe
           generate_release_notes: true
