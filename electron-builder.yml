@@ -33,7 +33,32 @@ files:
   - dist/**/*
   - dist-electron/**/*
   - node_modules/**/*
+  # Exclude build artifacts (source maps, TS, tests, devDeps) and better-sqlite3
+  # debug symbols so the installer only carries runtime files.
   - "!node_modules/**/*.map"
+  - "!node_modules/**/*.ts"
+  - "!node_modules/**/test/**"
+  - "!node_modules/**/tests/**"
+  - "!node_modules/**/__tests__/**"
+  - "!node_modules/better-sqlite3/**/*.pdb"
+  - "!node_modules/better-sqlite3/**/*.iobj"
+  - "!node_modules/better-sqlite3/**/*.ipdb"
+  - "!node_modules/better-sqlite3/**/sqlite3.lib"
+  - "!node_modules/better-sqlite3/**/test_extension*"
+  # Frontend devDependencies (react, lucide-react, date-fns, etc.) bundle
+  # into dist/ via Vite; their raw node_modules copies are not needed at runtime.
+  - "!node_modules/react/**"
+  - "!node_modules/react-dom/**"
+  - "!node_modules/lucide-react/**"
+  - "!node_modules/date-fns/**"
+  - "!node_modules/zod/**"
+  - "!node_modules/zustand/**"
+  - "!node_modules/react-hook-form/**"
+  - "!node_modules/react-router/**"
+  - "!node_modules/react-router-dom/**"
+  # @ffmpeg-installer is now a devDependency — thumbnails already have a
+  # graceful placeholder fallback, and its 60 MB binary is not needed.
+  - "!node_modules/@ffmpeg-installer/**"
   # better-sqlite3 prebuilds (native) must be copied into the package.
   - "package.json"
 extraResources: []
