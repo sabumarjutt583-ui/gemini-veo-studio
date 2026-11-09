@@ -38,7 +38,9 @@ export function createMainWindow(): BrowserWindow {
     void window.loadURL("http://localhost:5173");
     window.webContents.openDevTools({ mode: "detach" });
   } else {
-    void window.loadFile(path.join(__dirname, "../../dist/index.html"));
+    // main.js runs from <asar>/dist-electron/, so the renderer built by Vite
+    // lives one level up at <asar>/dist/index.html.
+    void window.loadFile(path.join(__dirname, "../dist/index.html"));
   }
 
   // Any external link must open in the system browser, not this window.
